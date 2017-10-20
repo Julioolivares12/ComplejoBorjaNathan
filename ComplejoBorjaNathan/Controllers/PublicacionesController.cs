@@ -12,6 +12,7 @@ namespace ComplejoBorjaNathan.Controllers
         // GET: Publicaciones
         public ActionResult Index()
         {
+            
             return View();
         }
 
