@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using ComplejoBorjaNathan.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ComplejoBorjaNathan.Controllers
 {
@@ -79,6 +80,7 @@ namespace ComplejoBorjaNathan.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -151,11 +153,17 @@ namespace ComplejoBorjaNathan.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Nombre, Email = model.Email, };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                    var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>());
+
+                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>());
+                    var usuarioActual = user.Id;
+                    // con esto creo le agrego un rol al usuario que se registre por defeto es alumno
+                    var resultado = UserManager.AddToRole(usuarioActual,"alumno");
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Enviar correo electrónico con este vínculo
